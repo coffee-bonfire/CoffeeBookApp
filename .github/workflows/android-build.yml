@@ -9,8 +9,7 @@ on: # ワークフローの発動条件
 
 permissions: # 権限
   contents: write # リポジトリコンテンツへの書き込み権限
-  actions: read # GitHub Actions への読み取り権限
-
+  pull-requests: write    # PRにコメントする権限
 jobs: # ジョブ
   build: # ジョブの名前
     if: github.event.pull_request.merged == true # プルリクエストがマージされたときのみ実行
@@ -25,7 +24,6 @@ jobs: # ジョブ
         with: # 設定
           distribution: 'zulu' # Zulu ディストリビューション
           java-version: '18' # Java 18
-          cache: 'gradle' # Gradle キャッシュ
 
       - name: Setup Gradle # Gradle のセットアップ
         uses: gradle/gradle-build-action@v2 # gradle/gradle-build-action@v2 を使用
@@ -34,7 +32,7 @@ jobs: # ジョブ
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_KEY }}
         run: |
-          echo "GOOGLE_SERVICES_KEY" | base64 -d > google-services.json
+          echo "$GOOGLE_SERVICES_JSON_CONTENT" | base64 -d > app/google-services.json
 
       - name: Build With Gradle # Gradle でビルド
         run: | # 実行コマンド,デバッグビルド
